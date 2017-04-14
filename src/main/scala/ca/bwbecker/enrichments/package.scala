@@ -66,7 +66,28 @@ package object enrichments {
     def sumBy[Res](f: T => Res)(implicit num: Numeric[Res]) = {
       seq.foldLeft(num.zero)((acc, b) ⇒ num.plus(acc, f(b)))
     }
+
   }
+
+
+  /**
+    * Stuff to test double values to within a given precision
+    *
+    * Usage:
+    * import ca.bwbecker.enrichments.RichDouble
+    * implicit val precision = Precision(0.0001)
+    * assert(1.0000 ~= 1.00005) ==> true
+    */
+  implicit class RichDouble(d: Double) {
+
+    /**
+      * Do two double precision numbers differ by no more than
+      * the given precision?
+      */
+    def ~=(d2: Double)(implicit p: Precision): Boolean = Math.abs(d - d2) <= p.p
+  }
+
+  case class Precision(val p: Double)
 
 
 }
