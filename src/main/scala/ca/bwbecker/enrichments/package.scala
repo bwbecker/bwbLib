@@ -7,7 +7,7 @@ package object enrichments {
 
 
   import scala.util.matching.Regex
-  import scala.language.implicitConversions
+  import scala.language.higherKinds
 
 
   /**
@@ -58,16 +58,40 @@ package object enrichments {
   }
 
 
-  implicit class RichTraversable[T](val seq: TraversableOnce[T]) {
+
+  implicit class RichTraversable[A, C[A] <: Iterable[A]](ca: C[A]) {
+
+    import collection.generic.CanBuildFrom
+
+    /**
+      * Return a copy of the list but with the first element matching item removed.
+      */
+    def less(item: A)(implicit cbf: CanBuildFrom[C[A], A, C[A]]): C[A] = {
+      val it = ca.iterator
+      val result = cbf()
+      var foundItem = false
+
+      while (it.hasNext) {
+        val e = it.next()
+        if (e == item && !foundItem) {
+          foundItem = true
+        } else {
+          result += e
+        }
+      }
+      result.result()
+    }
+
 
     /**
       * Sum values in a traversage that are extracted with f.
       */
-    def sumBy[Res](f: T => Res)(implicit num: Numeric[Res]) = {
-      seq.foldLeft(num.zero)((acc, b) ⇒ num.plus(acc, f(b)))
+    def sumBy[Res](f: A => Res)(implicit num: Numeric[Res]) = {
+      ca.foldLeft(num.zero)((acc, b) ⇒ num.plus(acc, f(b)))
     }
 
   }
+
 
 
   /**

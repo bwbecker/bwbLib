@@ -66,6 +66,51 @@ object EnrichmentsTest extends TestSuite {
           l.sumBy(x ⇒ x._2) ==> 10.0
         }
       }
+
+      "less" - {
+        "remove from Vector" - {
+          val v = Vector("one", "two", "three", "four", "three")
+
+          "remove only element" - {
+            v.less("two") ==> Vector("one", "three", "four", "three")
+          }
+
+          "remove only one when dups" - {
+            v.less("three") ==> Vector("one", "two", "four", "three")
+          }
+
+          "don't crash if not exists" - {
+            v.less("five") ==> Vector("one", "two", "three", "four", "three")
+          }
+
+          "works with something other than strings" - {
+            val v2 = Vector((1,1), (2,2), (3,3), (4,4), (3,3))
+            v2.less((3,3)) ==> Vector((1,1), (2,2), (4,4), (3,3))
+          }
+        }
+
+
+        "remove from List" - {
+          val lst = List("one", "two", "three", "four", "three")
+
+          "remove only element" - {
+            lst.less("two") ==> List("one", "three", "four", "three")
+          }
+
+          "remove only one when dups" - {
+            lst.less("three") ==> List("one", "two", "four", "three")
+          }
+
+          "don't crash if not exists" - {
+            lst.less("five") ==> List("one", "two", "three", "four", "three")
+          }
+
+          "works with something other than strings" - {
+            val lst2 = List((1,1), (2,2), (3,3), (4,4), (3,3))
+            lst2.less((3,3)) ==> List((1,1), (2,2), (4,4), (3,3))
+          }
+        }
+      }
     }
 
 
