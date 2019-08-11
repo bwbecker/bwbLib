@@ -1,5 +1,9 @@
 package ca.bwbecker
 
+import scala.concurrent.duration.FiniteDuration
+
+import java.time.{LocalDate, LocalTime}
+
 /**
   * Created by bwbecker on 2016-06-17.
   */
@@ -8,7 +12,6 @@ package object enrichments {
 
   import scala.util.matching.Regex
   import scala.language.higherKinds
-
 
   /**
     * Pimp the Regex class to include a method to just check if a string
@@ -47,15 +50,120 @@ package object enrichments {
   implicit class RichBoolean(val b: Boolean) extends AnyVal {
 
     /**
-      * Transform a boolean to an option.  Usage:
-      * myBool.option(result) => Some(result) if myBool is true; None otherwise
+      * Transform a boolean to an option.
+      *
+      * Examples:
+      * true.option("A string") => Some("A string)
+      * false.option("A string") => None
       *
       * @param a
       * @tparam A
       * @return
       */
     final def option[A](a: => A): Option[A] = if (b) Some(a) else None
+
+    /**
+      * An implementation of the ternary operator.
+      *
+      * Usage:
+      * {{{
+      *   import ca.bwbecker.enrichments.RichBoolean
+      *   val condition:Boolean = true
+      *
+      *   val x = condition ? "yes" | "no"
+      * }}}
+      */
+    def ?[X](t: ⇒ X) : Ternary[X] = new Ternary[X] {
+      def |(f: ⇒ X) = if (b) t else f
+    }
   }
+
+  trait Ternary[X] {
+    def |(f: ⇒ X):X
+  }
+
+
+  /**
+    * Enrich the String class.
+    *
+    * @param s
+    */
+  implicit class RichString(val s: String) extends AnyVal {
+
+    /**
+      * Transform a string into an Option[String].
+      */
+    final def toOption: Option[String] = if (s == null || s == "") None else Some(s)
+
+    /**
+      * Fallback for an empty string.
+      * Examples:
+      * "a string".getOrElse("fallback") ==> "a string"
+      * "".getOrElse("fallback") ==> "fallback"
+      */
+    final def getOrElse(value: String): String = {
+      if (s.isEmpty) value else s
+    }
+
+    /**
+      * Can a string to a given length, adding an ellipses if capped.
+      * Examples:
+      * "abc".cap(3) => "abc"
+      * "abcd".cap(3) => "ab…"
+      */
+    final def cap(max: Int): String = {
+      if (s.length > max) s.take(max - 1) + "…" else s
+    }
+
+  }
+
+
+
+
+  /**
+    * Extend IndexedSeq (principally Vector) with additional methods.
+    *
+    * Usage: {{{
+    * import Enrichments.RichIndexedSeq
+    * val v1 = Vector(0, 1, 2, 3)
+    * println(v1.withoutIndex(2)) ==> Vector(0, 2, 3)
+    * }}}
+    */
+  implicit class RichVector[T](val v: Vector[T]) extends AnyVal {
+    /*
+    Note:  It would be great to make this apply to more collection types.  There are helpful posts
+    on stackoverflow (http://stackoverflow.com/questions/5410846/how-do-i-apply-the-enrich-my-library-pattern-to
+    -scala-collections)
+    and in the Scala documentation itself (eg: http://www.scala-lang
+    .org/api/current/scala/collection/generic/IsTraversableLike.html),
+    however I was not able to get it to work in the time available.
+     */
+
+    /**
+      * Return a copy of this vector with the first instance of elem removed.
+      */
+    def without(elem: T): Vector[T] = {
+      val i = v.indexOf(elem)
+      withoutIndex(i)
+    }
+
+    /**
+      * Return a copy of this vector, omitting the element at index i.
+      */
+    def withoutIndex(i: Int): Vector[T] = {
+      val (front, back) = v.splitAt(i)
+      front ++ back.drop(1)
+    }
+
+    /**
+      * Shuffle the order of this vector.
+      *
+      * @return
+      */
+    def shuffle: Vector[T] = util.Random.shuffle(v)
+
+  }
+
 
 
 
@@ -112,6 +220,35 @@ package object enrichments {
   }
 
   case class Precision(val p: Double)
+
+
+
+  /**
+    * Comparison enrichments for java.time.LocalTime.
+    */
+  implicit class RichLocalTime(val t: LocalTime) extends AnyVal {
+    def +(d: FiniteDuration): LocalTime = {
+      t.plusNanos(d.toNanos)
+    }
+
+    def >(rhs: LocalTime): Boolean = t.isAfter(rhs)
+
+    def <(rhs: LocalTime): Boolean = t.isBefore(rhs)
+
+    def ≤(rhs: LocalTime): Boolean = !t.isAfter(rhs)
+  }
+
+  /**
+    * Comparison enrichments for java.time.LocalDate
+    */
+  implicit class RichLocalDate(val t: LocalDate) extends AnyVal {
+
+    def >(rhs: LocalDate): Boolean = t.isAfter(rhs)
+
+    def <(rhs: LocalDate): Boolean = t.isBefore(rhs)
+
+    def ≤(rhs: LocalDate): Boolean = !t.isAfter(rhs)
+  }
 
 
 }
