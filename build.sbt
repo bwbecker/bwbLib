@@ -16,16 +16,15 @@ scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-unchecked",
   "-deprecation",
-  "-Yno-adapted-args",
+//  "-Yno-adapted-args"
   "-Ywarn-dead-code",
-  "-Ywarn-numeric-widen",
-  "-Ywarn-value-discard",
-  "-Ywarn-unused"
+  "-Ywarn-numeric-widen"
+//  "-Ywarn-unused"
 )
 
 
 libraryDependencies ++= Seq(
-  "com.lihaoyi" %% "utest" % "0.7.1" % "test"
+  "com.lihaoyi" %% "utest" % "0.7.1"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")

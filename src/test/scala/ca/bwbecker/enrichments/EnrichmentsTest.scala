@@ -179,6 +179,8 @@ object EnrichmentsTest extends TestSuite {
           v1.withoutIndex(0) ==> Vector(1, 2, 3)
           v1.withoutIndex(1) ==> Vector(0, 2, 3)
           v1.withoutIndex(3) ==> Vector(0, 1, 2)
+
+          v1.withoutIndex(-1) ==> v1
         }
 
         "returns an collection of the same type" - {
@@ -193,6 +195,10 @@ object EnrichmentsTest extends TestSuite {
           v.without("zero") ==> Vector("one", "two", "three")
           v.without("one") ==> Vector("zero", "two", "three")
           v.without("three")  ==> Vector("zero", "one", "two")
+
+          v.without("four")  ==> v
+
+          Vector("one", "two").without("two") ==> Vector("one")
         }
 
       }

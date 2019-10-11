@@ -151,8 +151,12 @@ package object enrichments {
       * Return a copy of this vector, omitting the element at index i.
       */
     def withoutIndex(i: Int): Vector[T] = {
-      val (front, back) = v.splitAt(i)
-      front ++ back.drop(1)
+      if (0 <= i && i < this.v.length) {
+        val (front, back) = this.v.splitAt(i)
+        front ++ back.drop(1)
+      } else {
+        this.v
+      }
     }
 
     /**

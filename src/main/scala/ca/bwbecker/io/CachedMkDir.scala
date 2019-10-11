@@ -2,6 +2,8 @@ package ca.bwbecker.io
 
 import scala.collection.mutable.Set
 
+import java.io.File
+
 /**
 
 Usage:
@@ -27,5 +29,7 @@ class CachedMkdir {
       }
     }
   }
+
+  def mkdirp(path:File): Unit = mkdirp(path.getAbsolutePath)
 
 }
