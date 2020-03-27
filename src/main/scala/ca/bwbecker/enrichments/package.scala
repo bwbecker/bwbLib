@@ -73,13 +73,13 @@ package object enrichments {
       *   val x = condition ? "yes" | "no"
       * }}}
       */
-    def ?[X](t: ⇒ X) : Ternary[X] = new Ternary[X] {
+    def ?[X](t: ⇒ X): Ternary[X] = new Ternary[X] {
       def |(f: ⇒ X) = if (b) t else f
     }
   }
 
   trait Ternary[X] {
-    def |(f: ⇒ X):X
+    def |(f: ⇒ X): X
   }
 
 
@@ -116,8 +116,6 @@ package object enrichments {
     }
 
   }
-
-
 
 
   /**
@@ -169,8 +167,6 @@ package object enrichments {
   }
 
 
-
-
   implicit class RichTraversable[A, C[A] <: Iterable[A]](ca: C[A]) {
 
     import collection.generic.CanBuildFrom
@@ -179,8 +175,8 @@ package object enrichments {
       * Return a copy of the list but with the first element matching item removed.
       */
     def less(item: A)(implicit cbf: CanBuildFrom[C[A], A, C[A]]): C[A] = {
-      val it = ca.iterator
-      val result = cbf()
+      val it        = ca.iterator
+      val result    = cbf()
       var foundItem = false
 
       while (it.hasNext) {
@@ -202,8 +198,31 @@ package object enrichments {
       ca.foldLeft(num.zero)((acc, b) ⇒ num.plus(acc, f(b)))
     }
 
-  }
 
+    /**
+      * Return the {min, max} of the list along with all the other elements.
+      * List must have at least one element.
+      */
+    def singleOut(f: (A, A) ⇒ Boolean)(implicit cbf: CanBuildFrom[C[A], A, C[A]]): (A, C[A]) = {
+      assert(ca.nonEmpty, "singleOut applied to empty traversable.")
+      val it        = ca.iterator
+      var selected  = it.next()
+      val result    = cbf()
+      var foundItem = false
+
+      while (it.hasNext) {
+        val e = it.next()
+        if (f(e, selected)) {
+          result += selected
+          selected = e
+        } else {
+          result += e
+        }
+      }
+      (selected, result.result())
+    }
+
+  }
 
 
   /**
@@ -224,7 +243,6 @@ package object enrichments {
   }
 
   case class Precision(val p: Double)
-
 
 
   /**

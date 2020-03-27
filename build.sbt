@@ -3,11 +3,11 @@ organization := "ca.bwbecker"
 
 name := "bwbLib"
 
-version := "1.5-SNAPSHOT"
+version := "1.6-SNAPSHOT"
 
-scalaVersion := "2.12.10"
+scalaVersion := "2.12.11"
   
-crossScalaVersions := Seq("2.11.8", "2.12.10")
+crossScalaVersions := Seq("2.12.11")
 
 // See https://blog.threatstack.com/useful-scalac-options-for-better-scala-development-part-1
 scalacOptions ++= Seq(
@@ -24,7 +24,7 @@ scalacOptions ++= Seq(
 
 
 libraryDependencies ++= Seq(
-  "com.lihaoyi" %% "utest" % "0.7.2"
+  "com.lihaoyi" %% "utest" % "0.7.4"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")

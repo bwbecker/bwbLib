@@ -103,8 +103,8 @@ object EnrichmentsTest extends TestSuite {
           }
 
           "works with something other than strings" - {
-            val v2 = Vector((1,1), (2,2), (3,3), (4,4), (3,3))
-            v2.less((3,3)) ==> Vector((1,1), (2,2), (4,4), (3,3))
+            val v2 = Vector((1, 1), (2, 2), (3, 3), (4, 4), (3, 3))
+            v2.less((3, 3)) ==> Vector((1, 1), (2, 2), (4, 4), (3, 3))
           }
         }
 
@@ -125,9 +125,26 @@ object EnrichmentsTest extends TestSuite {
           }
 
           "works with something other than strings" - {
-            val lst2 = List((1,1), (2,2), (3,3), (4,4), (3,3))
-            lst2.less((3,3)) ==> List((1,1), (2,2), (4,4), (3,3))
+            val lst2 = List((1, 1), (2, 2), (3, 3), (4, 4), (3, 3))
+            lst2.less((3, 3)) ==> List((1, 1), (2, 2), (4, 4), (3, 3))
           }
+        }
+      }
+
+      "singleOut" - {
+        val lst = List(1, 3, 2, 6, 5, 4)
+
+        "raw min" - {
+          lst.singleOut((a, b) ⇒ a < b) ==> (1, List(3, 2, 6, 5, 4))
+        }
+
+        "raw max" - {
+          lst.singleOut((a, b) ⇒ a > b) ==> (6, List(1, 2, 3, 5, 4))
+        }
+
+
+        "raw max with vector" - {
+          lst.toVector.singleOut((a, b) ⇒ a > b) ==> (6, Vector(1, 2, 3, 5, 4))
         }
       }
     }
@@ -194,9 +211,9 @@ object EnrichmentsTest extends TestSuite {
 
           v.without("zero") ==> Vector("one", "two", "three")
           v.without("one") ==> Vector("zero", "two", "three")
-          v.without("three")  ==> Vector("zero", "one", "two")
+          v.without("three") ==> Vector("zero", "one", "two")
 
-          v.without("four")  ==> v
+          v.without("four") ==> v
 
           Vector("one", "two").without("two") ==> Vector("one")
         }
